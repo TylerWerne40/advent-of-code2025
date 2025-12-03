@@ -5,6 +5,47 @@ import (
 	"os"
 	"bufio"
 )
+var wordToDigit = map[string]int{
+	"one":   1,
+	"two":   2,
+	"three": 3,
+	"four":  4,
+	"five":  5,
+	"six":   6,
+	"seven": 7,
+	"eight": 8,
+	"nine":  9,
+}
+
+func getNums(line string) int {
+	var first, last int
+	found := false
+
+	for i := 0; i < len(line); i++ {
+		digit := -1
+
+		if line[i] >= '0' && line[i] <= '9' {
+			digit = int(line[i] - '0')
+		} else {
+			for word, val := range wordToDigit {
+				if i+len(word) <= len(line) && line[i:i+len(word)] == word {
+					digit = val
+				}
+			}
+		}
+
+		if digit != -1 {
+			if !found {
+				first = digit
+				found = true
+			}
+			last = digit // keep updating last
+		}
+	}
+
+	// If no digits found (shouldn't happen per puzzle), return 0
+	return 10*first + last
+}
 
 func main() {
 	var fname string
@@ -17,30 +58,11 @@ func main() {
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
-	var linenums []int = make([]int, 0, 20)
-	for scanner.Scan() {
-		var ints []int = make([]int, 2)
-		line := scanner.Text()
-		
-		var sec bool = false
-		for _, char := range line {
-			if char >= '0' && char <= '9' {
-				digit := int(char - '0')
-				if !sec {
-					ints[0] = digit
-					ints[1] = digit
-					sec = true
-				} else {
-					ints[1] = digit
-				}
-			}
-		}
-		var linenum int = 10*ints[0] + ints[1]
-		linenums = append(linenums, linenum)
-	}
 	var sum int = 0
-	for _, i := range linenums {
-		sum += i
+	for scanner.Scan() {
+		line := scanner.Text()
+		value := getNums(line)
+		sum += value
 	}
 	fmt.Printf("The sum is ... %d", sum)
 }
