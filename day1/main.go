@@ -39,11 +39,10 @@ func getNums(line string) int {
 				first = digit
 				found = true
 			}
-			last = digit // keep updating last
+			last = digit 
 		}
 	}
 
-	// If no digits found (shouldn't happen per puzzle), return 0
 	return 10*first + last
 }
 
